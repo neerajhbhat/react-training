@@ -39,8 +39,20 @@ async function downloadData() {
            fillBankListIntoSelect()
     }
 downloadData();
-  
+function changeoptions(ID){
+    var ss = document.getElementById(ID);
+    var length = ss.options.length;
+    while(length>1)
+    {
+        ss.options[1]=null
+        --length
+    }
+    ss[0].selected = true
+}
 document.getElementById('Bank').onchange = function(){
+    changeoptions('State')
+    changeoptions('District')
+    changeoptions('Branch')
     const bank = document.getElementById('Bank').value
     const json_object = filterListByBank(bank)
     const all_states = json_object.map(function(item){
@@ -48,6 +60,7 @@ document.getElementById('Bank').onchange = function(){
     })
     const UniqueStates = new Set(all_states)
     const states = Array.from(UniqueStates);
+    bankState.UniqueStates = states
     const StateSelect = document.getElementById("State")
     states.forEach(element => {
         const newOption = document.createElement("OPTION");
@@ -58,6 +71,8 @@ document.getElementById('Bank').onchange = function(){
 
 }   
 document.getElementById('State').onchange = function(){
+    changeoptions('District')
+    changeoptions('Branch')
     const bank = document.getElementById('Bank').value
     const state = document.getElementById('State').value
     const json_object = filterListByBankAndState(bank,state)
@@ -66,6 +81,7 @@ document.getElementById('State').onchange = function(){
     })
     const UniqueDistricts = new Set(all_districts)
     const districts = Array.from(UniqueDistricts);
+    bankState.UniqueDistricts = districts
     const districtselect = document.getElementById("District")
     districts.forEach(element => {
         const newOption = document.createElement("OPTION");
@@ -75,25 +91,30 @@ document.getElementById('State').onchange = function(){
     });
 
 }    
-document.getElementById('State').onchange = function(){
+
+document.getElementById('District').onchange = function(){
+    changeoptions('Branch')
     const bank = document.getElementById('Bank').value
     const state = document.getElementById('State').value
-    const json_object = filterListByBankAndState(bank,state)
-    const all_districts = json_object.map(function(item){
-        return item.DISTRICT
+    const district = document.getElementById('District').value
+
+    const json_object = filterListByBankAndStateAndDistrict(bank,state,district)
+    const all_branch = json_object.map(function(item){
+        return item.BRANCH
     })
-    const UniqueDistricts = new Set(all_districts)
-    const districts = Array.from(UniqueDistricts);
-    const districtselect = document.getElementById("District")
-    districts.forEach(element => {
+    const UniqueBranch = new Set(all_branch)
+    const branches = Array.from(UniqueBranch);
+    const branchselect = document.getElementById("Branch")
+    branches.forEach(element => {
         const newOption = document.createElement("OPTION");
         newOption.text = element;
         newOption.value = element;
-        districtselect.add(newOption)
+        branchselect.add(newOption)
     });
 
 }
-document.getElementById('District').onchange = function(){
+
+document.getElementById('Branch').onchange = function(){
     const bank = document.getElementById('Bank').value
     const state = document.getElementById('State').value
     const district = document.getElementById('District').value
